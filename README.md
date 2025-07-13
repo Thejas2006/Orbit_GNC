@@ -1,1 +1,3 @@
 # GNC
+
+building a GNC system. Not the official repo...
