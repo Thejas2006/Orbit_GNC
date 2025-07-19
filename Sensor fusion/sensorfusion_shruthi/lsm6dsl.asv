@@ -1,0 +1,89 @@
+% Sample rate and time
+Fs = 400;                 % Sampling rate in Hz
+duration = 10;            % Duration in seconds
+t = (0:1/Fs:duration)';   % Time vector
+
+% LSM6DSL Accelerometer Parameters (±4g)
+accelParams = accelparams(...
+    'MeasurementRange', 4 * 9.81, ...
+    'Resolution', 2 * 4 * 9.81 / (2^16), ...
+    'NoiseDensity', 90e-6 * 9.81, ...
+    'ConstantBias', [0.002, -0.0015, 0.001] * 9.81, ...
+    'AxesMisalignment', [0.01; -0.01; 0.005] ...
+);
+
+% LSM6DSL Gyroscope Parameters (±250 dps)
+gyroParams = gyroparams(...
+    'MeasurementRange', 250, ...
+    'Resolution', 2 * 250 / (2^16), ...
+    'NoiseDensity', 3.8e-3, ...
+    'ConstantBias', [0.01, -0.02, 0.005], ...
+    'AxesMisalignment', [0.005; -0.005; 0.002] ...
+);
+
+% LIS3MDL Magnetometer Parameters (±4 gauss = ±400 µT)
+magParams = magparams(...
+    'MeasurementRange', 4e-4, ...
+    'Resolution', 2 * 4e-4 / (2^16), ...
+    'NoiseDensity', 0.15e-6, ...
+    'ConstantBias', [10, -5, 3] * 1e-6, ...
+    'AxesMisalignment', [0.01; -0.01; 0.005] ...
+);
+
+% Create full IMU sensor object (accel + gyro + magneto)
+imu = imuSensor('accel-gyro-mag', ...
+    'SampleRate', Fs, ...
+    'Accelerometer', accelParams, ...
+    'Gyroscope', gyroParams, ...
+    'Magnetometer', magParams ...
+);
+
+% Simulated inputs (stationary IMU)
+N = length(t);
+accelTrue = zeros(N, 3);
+gyroTrue = zeros(N, 3);
+magTrue = repmat([20, 0, 40] * 1e-6, N, 1);  % µT → T
+
+% Preallocate outputs
+accelReadings = zeros(N, 3);
+gyroReadings = zeros(N, 3);
+magReadings   = zeros(N, 3);
+
+for i = 1:N
+    [accelReadings(i,:), gyroReadings(i,:), magReadings(i,:)] = imu( ...
+        accelTrue(i,:), ...
+        gyroTrue(i,:), ...
+        magTrue(i,:) ...
+    );
+end
+
+% Plot results
+figure;
+subplot(3,1,1);
+plot(t, accelReadings);
+title('LSM6DSL Accelerometer Readings');
+ylabel('Acceleration (m/s^2)');
+legend('X', 'Y', 'Z');
+
+subplot(3,1,2);
+plot(t, gyroReadings);
+title('LSM6DSL Gyroscope Readings');
+ylabel('Angular Velocity (deg/s)');
+legend('X', 'Y', 'Z');
+
+subplot(3,1,3);
+plot(t, magReadings * 1e6);  % Tesla → µT
+title('LIS3MDL Magnetometer Readings');
+ylabel('Magnetic Field (\muT)');
+xlabel('Time (s)');
+legend('X', 'Y', 'Z');
+
+% Create timeseries
+ts_accel = timeseries(accelReadings, t);
+ts_gyro = timeseries(gyroReadings, t);
+ts_mag  = timeseries(magReadings, t);
+
+% Save data
+save('lsm6dsl_accel_data.mat', 'ts_accel','-v7.3');
+save('lsm6dsl_gyro_data.mat', 'ts_gyro', '-v7.3');
+save('lis3mdl_mag_data.mat', 'ts_mag', '-v7.3');
