@@ -1,3 +1,34 @@
 submit your work related to sensor fusion here with ur name.
 
 dealine: 19/07/2025
+
+
+aarushi : 
+
+one IMU is floating in free space. why dont u recheck ur system before submitting. also why do u have zip folder inside a foler??. it took me million years to go through each folder.
+You created a static system btw. all the inputs are constants.
+Even the output is varying EVEN WITH NO NOISE ADDED.😒 
+
+efforts : 9/10, work : 3.9/10
+
+rishie:
+
+u also created a static system, all the inputs are constants.
+the output shows change ONLY if the inputs are changed in x-axis. remaining its not working.
+change the legend also.
+ALSO DIDNT check with noise
+
+efforts: 9.5/10, work : 4.6/10
+
+shruthi:
+u did in matlab 2025a version, i dont have that. cant open😭😭😭
+
+arul:
+
+added noise, good. everything is working but yaw isnt.
+work on yaw again.
+
+efforts : 10/10 , work = 8.7/10 --( he built kf from scratch , so 10 for efforsts) 
+
+
+
